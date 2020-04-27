@@ -41,6 +41,16 @@ public class RoadInfo : MonoBehaviour {
 
     }
 
+    public void hoverGroup(RoadInfo caller) {
+        for (int x = 0; x < groupMembers.Length; x++)
+        {
+            if (groupMembers[x] != null && groupMembers[x] != caller)
+            {
+                groupMembers[x].hoverGroup(this);
+                groupMembers[x].hovering = true;
+            }
+        }
+    }
     public void setNeighbour(int index, RoadInfo val)
     {
         neighbours[index] = val;
@@ -85,6 +95,7 @@ public class RoadInfo : MonoBehaviour {
             selectRoad();
         }
         hovering = true;
+        hoverGroup(this);
     }
 
     public void Update()
