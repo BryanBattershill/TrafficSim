@@ -152,6 +152,7 @@ public class StraightRoad : RoadPlacement {
         else if (Input.GetMouseButtonUp(0))
         {
             selected = null;
+            RoadInfo prevRoad = null;
             while (buildingGhosts.Count != 0)
             {
                 GameObject tempObj = buildingGhosts.Pop();
@@ -159,7 +160,14 @@ public class StraightRoad : RoadPlacement {
                 tempObj.transform.position = new Vector3(Mathf.RoundToInt(tempPos.x), Mathf.RoundToInt(tempPos.y), Mathf.RoundToInt(tempPos.z));
                 SpriteRenderer temp = tempObj.GetComponent<SpriteRenderer>();
                 temp.color = new Color(temp.color.r, temp.color.g, temp.color.b, 1f);
-                tempObj.GetComponent<RoadInfo>().setInteractable(true);
+                RoadInfo currRoad = tempObj.GetComponent<RoadInfo>();
+                currRoad.setInteractable(true);
+                if (prevRoad != null)
+                {
+                    currRoad.setGroupMember(0, prevRoad);
+                    prevRoad.setGroupMember(1, currRoad);
+                }
+                prevRoad = currRoad;
             }
         }
     }

@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 public class RoadInfo : MonoBehaviour {
     private float turnRadius;
     private int turnDirection;
-    private float speedLimit = 4;
+    public float speedLimit = 4;
     private bool isEntranceVal = true;
     private int exitAngle = 0;
     private Vector2 exitPos;
@@ -16,18 +16,49 @@ public class RoadInfo : MonoBehaviour {
     public bool selecting = false;
     public bool hovering = false;
 
-    private RoadInfo[] links = new RoadInfo[2];
+    public RoadInfo[] groupMembers = new RoadInfo[] { null, null, null, null };
+    private RoadInfo[] neighbours = new RoadInfo[] { null, null, null, null };
 
     private void Start()
     {
         speedLimitChanger = GameObject.Find("SpeedLimitInputField");
     }
 
+    public List<RoadInfo> getGroupMembers(RoadInfo caller)
+    {
+        List<RoadInfo> temp = new List<RoadInfo>();
+        temp.Add(this);
+        for (int x = 0; x < groupMembers.Length; x++)
+        {
+            if (groupMembers[x] != null && groupMembers[x] != caller)
+            {
+                temp.Add(groupMembers[x]);
+                temp.AddRange(groupMembers[x].getGroupMembers(this));
+                groupMembers[x].selectRoad();
+            }
+        }
+        return temp;
+
+    }
+
+    public void setNeighbour(int index, RoadInfo val)
+    {
+        neighbours[index] = val;
+    }
+
+    public void setGroupMember(int index, RoadInfo val)
+    {
+        groupMembers[index] = val;
+    }
+    public void selectRoad()
+    {
+        this.GetComponent<SpriteRenderer>().sprite = selectedSprite;
+        selecting = true;
+    }
     void OnMouseOver()
     {
         if (!selecting && Input.GetMouseButtonUp(0))
         {
-            this.GetComponent<SpriteRenderer>().sprite = selectedSprite;
             Vector3 currPos = this.transform.position;
             this.transform.position = new Vector3(currPos.x, currPos.y, -1);
             Vector3 UIPos = Camera.main.WorldToScreenPoint(this.transform.position);
@@ -48,9 +79,10 @@ public class RoadInfo : MonoBehaviour {
 
             speedLimitChanger.transform.position = UIPos;
             SpeedLimitUI temp = speedLimitChanger.GetComponent<SpeedLimitUI>();
-            temp.setTarget(this.gameObject);
+            temp.setTargets(this, getGroupMembers(this).ToArray());
+            //print(getGroupMembers(this).ToArray().Length);
             temp.interactable(true);
-            selecting = true;
+            selectRoad();
         }
         hovering = true;
     }

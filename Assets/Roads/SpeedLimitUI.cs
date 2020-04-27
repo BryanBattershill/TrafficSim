@@ -8,8 +8,7 @@ public class SpeedLimitUI : MonoBehaviour {
     Slider valSlider;
     const int MAXVAL = 200;
     const int defaultVal = 40;
-    private GameObject roadTarget = null;
-    private RoadInfo roadTargetInfo;
+    private RoadInfo[] roadTargets = null;
     private const float scale = 10;
 
     private void Start()
@@ -38,30 +37,31 @@ public class SpeedLimitUI : MonoBehaviour {
         }
         valSlider.value = value;
         valText.text = value.ToString();
-        if (roadTarget != null)
+        if (roadTargets != null)
         {
-            roadTargetInfo.setSpeedLimit(value/scale);
+            foreach (var road in roadTargets)
+            {
+                road.setSpeedLimit(value / scale);
+            }
         }
     }
     
     public void changeVal(float val)
     {
         valText.text = val.ToString();
-        if (roadTarget != null)
+        if (roadTargets != null)
         {
-            roadTargetInfo.setSpeedLimit(val / scale);
+            foreach (var road in roadTargets)
+            {
+                road.setSpeedLimit(val / scale);
+            }
         }
     }
 
-    public void setTarget(GameObject road)
+    public void setTargets(RoadInfo firstTarg, RoadInfo[] roads)
     {
-        if (roadTarget != null && roadTarget != road)
-        {
-            roadTargetInfo.resetDefaultSprite();
-        }
-        roadTarget = road;
-        roadTargetInfo = roadTarget.GetComponent<RoadInfo>();
-        float temp = roadTargetInfo.getSpeedLimit()*scale;
+        roadTargets = roads;
+        float temp = firstTarg.getSpeedLimit()*scale;
         valSlider.value = temp;
         valText.text = temp.ToString();
     }
