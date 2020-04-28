@@ -7,6 +7,11 @@ public class StraightRoad : RoadPlacement {
     private Vector2 lastMousePos;
     private Stack<GameObject> buildingGhosts = new Stack<GameObject>(100);
 
+    protected new void Start()
+    {
+        base.Start();
+    }
+
     override public void Build(Vector2 mousePos)
     {
         if (Input.GetMouseButtonDown(0))
@@ -169,6 +174,7 @@ public class StraightRoad : RoadPlacement {
                 }
                 prevRoad = currRoad;
             }
+            buttonsInteractable(true);
         }
     }
 }

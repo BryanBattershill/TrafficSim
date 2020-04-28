@@ -52,6 +52,7 @@ public class GridBuilder : MonoBehaviour {
 
     public void straightRoad(GameObject roadType)
     {
+        
         currentPlacement = SR;
         changeSprite(roadType);
     }
@@ -78,6 +79,7 @@ public class GridBuilder : MonoBehaviour {
         if (Input.GetMouseButtonUp(0) && ignoreMouseUp)
         {
             ignoreMouseUp = false;
+            currentPlacement.buttonsInteractable(false);
         }
         else
         {
@@ -85,10 +87,11 @@ public class GridBuilder : MonoBehaviour {
         }
     }
 
-    
 
     void Update ()
     {
         selectCell();
     }
+
+    
 }

@@ -60,7 +60,6 @@ public class SpeedLimitUI : MonoBehaviour {
 
     public void setTargets(RoadInfo firstTarg, RoadInfo[] roads)
     {
-        print(firstTarg);
         roadTargets = roads;
         float temp = firstTarg.getSpeedLimit()*scale;
         valSlider.value = temp;

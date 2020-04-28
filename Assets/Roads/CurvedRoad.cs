@@ -12,8 +12,9 @@ public class CurvedRoad : RoadPlacement {
     private int quadrant = 0;
     private int buildingState = 0;
 
-    private void Start()
+    protected new void Start()
     {
+        base.Start();
         diagonalVectors = new Vector2[] {
             (Vector2.right + Vector2.up).normalized,
             (Vector2.left + Vector2.up).normalized,
@@ -23,7 +24,21 @@ public class CurvedRoad : RoadPlacement {
 
     override public void Build(Vector2 mousePos)
     {
-        if (buildingState == 1)
+        if (buildingState == 0)
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                selected.transform.parent = null;
+                firstRoad = selected;
+                startBuildPos = mousePos;
+                selected = Instantiate(selected, mousePos, Quaternion.identity);
+                secondRoad = selected;
+                selected.name = "Selected";
+                buildingState = 1;
+                isVertical = false;
+            }
+        }
+        else if (buildingState == 1)
         {
             Vector2 temp = (mousePos - startBuildPos);
             Vector2 placement = new Vector2(0, 0);
@@ -49,21 +64,7 @@ public class CurvedRoad : RoadPlacement {
             }
             placement = new Vector2(Mathf.RoundToInt(placement.x), Mathf.RoundToInt(placement.y));
             selected.transform.position = placement + startBuildPos;
-        }
-        if (Input.GetMouseButtonDown(0))
-        {
-            if (buildingState == 0)
-            {
-                selected.transform.parent = null;
-                firstRoad = selected;
-                startBuildPos = mousePos;
-                selected = Instantiate(selected, mousePos, Quaternion.identity);
-                secondRoad = selected;
-                selected.name = "Selected";
-                buildingState = 1;
-                isVertical = false;
-            }
-            else if (buildingState == 1 && mousePos.x != startBuildPos.x && mousePos.y != startBuildPos.y)
+            if (Input.GetMouseButtonDown(0) && mousePos.x != startBuildPos.x && mousePos.y != startBuildPos.y)
             {
                 buildingState = 2;
                 Vector2 vecOffset = Vector2.left;
@@ -73,7 +74,10 @@ public class CurvedRoad : RoadPlacement {
                 }
                 dirIndicator = Instantiate(selected, startBuildPos + vecOffset, Quaternion.identity);
             }
-            else if (buildingState == 2)
+        }
+        else if (buildingState == 2)
+        {
+            if (Input.GetMouseButtonDown(0))
             {
                 RoadInfo tempRoad = firstRoad.GetComponent<RoadInfo>();
                 tempRoad.setSpeedLimit(4);
@@ -117,11 +121,9 @@ public class CurvedRoad : RoadPlacement {
                 Destroy(dirIndicator);
                 selected = null;
                 buildingState = 0;
+                buttonsInteractable(true);
             }
-        }
-        else if (Input.GetMouseButtonDown(1))
-        {
-            if (buildingState == 2)
+            else if (Input.GetMouseButtonDown(1))
             {
                 isVertical = !isVertical;
                 Vector2 tempPos = (Vector2)dirIndicator.transform.position - startBuildPos;
